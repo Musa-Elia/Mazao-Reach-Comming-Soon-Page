@@ -52,9 +52,9 @@ phoneInput.addEventListener('input', () => {
   }
 });
 
-// Validate Tanzanian phone number
+// Validate Tanzanian phone number (12 digits, starting with 255)
 function isValidTZPhone(phone) {
-  return /^255\d{9}$/.test(phone); // Must be 12 digits starting with 255
+  return /^255\d{9}$/.test(phone);
 }
 
 // Handle subscription form submit
