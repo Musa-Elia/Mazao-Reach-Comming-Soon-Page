@@ -1,4 +1,4 @@
-// Set launch date to 25 days from now
+// Countdown timer logic
 const now = new Date();
 const launchDate = new Date(now.getTime() + 25 * 24 * 60 * 60 * 1000).getTime();
 
@@ -29,29 +29,88 @@ const themeIcon = document.getElementById('theme-icon');
 function setTheme(theme) {
   if (theme === 'light') {
     document.body.classList.add('light-theme');
-    themeIcon.src = 'https://cdn-icons-png.flaticon.com/512/414/414825.png'; // sun icon
+    themeIcon.src = 'https://cdn-icons-png.flaticon.com/512/414/414825.png';
   } else {
     document.body.classList.remove('light-theme');
-    themeIcon.src = 'https://cdn-icons-png.flaticon.com/512/869/869869.png'; // moon icon
+    themeIcon.src = 'https://cdn-icons-png.flaticon.com/512/869/869869.png';
   }
   localStorage.setItem('theme', theme);
 }
 
-// Load saved theme or default to dark
-const savedTheme = localStorage.getItem('theme') || 'dark';
-setTheme(savedTheme);
+setTheme(localStorage.getItem('theme') || 'dark');
 
-// Theme toggle click event
 themeToggleBtn.addEventListener('click', () => {
-  const currentTheme = document.body.classList.contains('light-theme') ? 'light' : 'dark';
-  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-  setTheme(newTheme);
+  const current = document.body.classList.contains('light-theme') ? 'light' : 'dark';
+  setTheme(current === 'light' ? 'dark' : 'light');
 });
 
-// Force phone input to start with 255
+// Enforce phone input starting with 255
 const phoneInput = document.getElementById('phoneInput');
 phoneInput.addEventListener('input', () => {
   if (!phoneInput.value.startsWith('255')) {
     phoneInput.value = '255';
   }
+});
+
+// Validate Tanzanian phone number
+function isValidTZPhone(phone) {
+  return /^255\d{9}$/.test(phone); // Must be 12 digits starting with 255
+}
+
+// Handle subscription form submit
+document.getElementById('subscribeForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  const phone = phoneInput.value.trim();
+
+  if (!isValidTZPhone(phone)) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Invalid Number',
+      text: 'Please enter a valid Tanzanian mobile number (12 digits starting with 255).',
+      confirmButtonColor: '#f16837'
+    });
+    return;
+  }
+
+  fetch('subscribe.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `phone=${encodeURIComponent(phone)}`
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'success') {
+        Swal.fire({
+          icon: 'success',
+          title: 'Subscribed!',
+          text: 'You have successfully subscribed to our mailing list.',
+          confirmButtonColor: '#58842c'
+        });
+        document.getElementById('subscribeForm').reset();
+        phoneInput.value = '255';
+      } else if (data.status === 'exists') {
+        Swal.fire({
+          icon: 'info',
+          title: 'Already Subscribed',
+          text: 'This phone number is already in our list.',
+          confirmButtonColor: '#58842c'
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: data.message || 'Something went wrong. Please try again.',
+          confirmButtonColor: '#f16837'
+        });
+      }
+    })
+    .catch(() => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Network Error',
+        text: 'Please check your internet connection and try again.',
+        confirmButtonColor: '#f16837'
+      });
+    });
 });
