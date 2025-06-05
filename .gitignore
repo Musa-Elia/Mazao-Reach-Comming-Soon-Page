@@ -1,7 +1,7 @@
 # Ignore sensitive backend files
 /includes/db_config.php
 /database/setup.sql
-
+/subscribe.php
 # Ignore system files (Windows, macOS)
 .DS_Store
 Thumbs.db
