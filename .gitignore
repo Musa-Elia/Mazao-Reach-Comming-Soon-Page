@@ -1,0 +1,23 @@
+# Ignore sensitive backend files
+/includes/db_config.php
+/database/setup.sql
+
+# Ignore system files (Windows, macOS)
+.DS_Store
+Thumbs.db
+
+# Ignore editor/IDE settings
+.vscode/
+*.code-workspace
+
+# Ignore log or temp files
+*.log
+*.tmp
+
+# Ignore node_modules or vendor if added in future
+/node_modules/
+/vendor/
+
+# Optional: Ignore environment config if used later
+.env
+.env.local
